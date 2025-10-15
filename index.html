@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF6B9D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>❤️ Baharı Seviyorum ❤️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Arka plan müziği -->
+    <audio id="backgroundMusic" loop>
+        <source src="sounds/background-music.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Kazanma sesi -->
+    <audio id="winSound">
+        <source src="sounds/kazanmasesi.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Yeni Ses Efektleri -->
+    <audio id="jumpSound">
+        <source src="sounds/jump.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="scoreSound">
+        <source src="sounds/score.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="collectSound">
+        <source src="sounds/collect-chocolate.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="crashSound">
+        <source src="sounds/crash.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Animasyonlu kalpler -->
+    <div class="hearts-background" id="heartsBackground"></div>
+    
+    <!-- Ana Menü -->
+    <div id="mainMenu" class="main-menu">
+        <div class="menu-content">
+            <div id="togetherTimer" class="together-timer">
+                💕 Birlikte geçen süre: <span id="timerDisplay">Yükleniyor...</span> 💕
+            </div>
+            <h1 class="menu-title">💖 Bahar 💖</h1>
+            <div class="bahar-pattern">Bahar • Bahar • Bahar • Bahar • Bahar</div>
+            <button id="playButton" class="menu-button play-button">
+                <span>🎮 Oyna</span>
+            </button>
+            <button id="secretNoteButton" class="menu-button secret-button">
+                <span>🔒 Gizli Not</span>
+            </button>
+            <button id="memoryCardsButton" class="menu-button memory-button">
+                <span>📸 Anı Kartları</span>
+            </button>
+            <button id="settingsButton" class="menu-button settings-button">
+                <span>⚙️ Ayarlar</span>
+            </button>
+            <p class="creator">Yapan: Baran Uruncan ❤️</p>
+        </div>
+    </div>
+    
+    <!-- Gizli Not Modal -->
+    <div id="secretNoteModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🔒 Gizli Not</h2>
+            <input type="password" id="passwordInput" placeholder="Şifreyi gir..." />
+            <button id="unlockButton" class="modal-button">Kilidi Aç</button>
+            <button id="closeModalButton" class="modal-button cancel-button">İptal</button>
+            <p id="errorMessage" class="error-message hidden">❌ Yanlış şifre!</p>
+        </div>
+    </div>
+    
+    <!-- Gizli Not İçeriği -->
+    <div id="secretContent" class="secret-content hidden">
+        <div class="secret-inner">
+            <button id="closeSecretButton" class="close-secret">✖</button>
+            <h1>💕 Gizli Notum 💕</h1>
+            <div class="secret-text">
+               <p>Sevgili Bahar,</p>
+        <p>Bu oyunu sana, sana hissettiklerimi daha dürüstçe anlatabilmek için yaptım. Her satır, her renk, her sessiz an hepsi senin için.</p>
+        <p>O gün birbirimize sarılıp uzun uzun ağladığımız anı unutamıyorum. Gözyaşların boynuma döküldü; o sessizlikte yalnızca kalplerimizin sesi vardı. İşte o an, her şeyin ne kadar gerçek olduğunu anladım.</p>
+        <p>Sen benim <strong>ilkimsin</strong>. Bunu bilmeni istiyorum. Ama ben senin ilk olmadığımı da görüyorum; sınıfta bazen eski yüzlerle karşılaşmak, geçmişin gölgelerini hissetmek kolay değil.</p>
+        <p>O baskıyı, o kıskançlığı, o tereddütleri hissediyorum ve yine de vazgeçmiyorum. Çünkü seni sevmenin en doğru yolunun pes etmemek olduğunu düşünüyorum. Her gün çabalıyorum; bazen yorgun, bazen eksik ama hep samimi. Biliyorum çünkü, aşk korkakların işi değildir.</p>
+        <p>Sana dokunamadığım anlarda bile, içinden seni sarıyorum. Konuşmasak da, suskunluğumuz bizim dilimiz oluyor. Senin yanında olmak, her şeye değer.</p>
+        <p>Belki hikâyemiz başından kusursuz başlamadı ama bu kalbimdeki yerin, seninle ilk defa böyle bütünleşmiş olmam her şeye değer. Bana verdiğin özel his için teşekkür ederim; ben de her gün bu değeri korumak için çalışıyorum ve bende sana o değeri vermeye çalışıyorum</p>
+
+        <p class="signature">— Sevgilin(Gelecekteki Eşin) Baran Ürüncan ❤️</p>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Anı Kartları Ekranı -->
+    <div id="memoryCardsScreen" class="memory-cards-screen hidden">
+        <div class="memory-cards-container">
+            <button id="closeMemoryCardsButton" class="close-memory-cards">✖</button>
+            <h1>📸 Anı Kartlarımız 💕</h1>
+            <p class="memory-description">Her 10 puanda bir anımız açılıyor! 🎉</p>
+            
+            <div class="cards-grid">
+                <!-- 10 Puan - Kart 1 -->
+                <div class="memory-card locked" data-points="10" data-card="1">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">10 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani1.jpg" alt="Anı 1" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E📸%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Kelebek Etkisi 💕</h3>
+                            <p>Bir ceketten daha fazlası, bir animasyondan daha fazlası...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 20 Puan - Kart 2 -->
+                <div class="memory-card locked" data-points="20" data-card="2">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">20 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani2.jpg" alt="Anı 2" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22https://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💕%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Ellerimiz yan yana</h3>
+                            <p>Birlikte yürüdüğümüz o güzel akşam...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 30 Puan - Kart 3 -->
+                <div class="memory-card locked" data-points="30" data-card="3">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">30 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani3.jpg" alt="Anı 3" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💖%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>İkili Aşk Menüsü</h3>
+                            <p>Senin gülüşün benim en sevdiğim ses...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 40 Puan - Kart 4 -->
+                <div class="memory-card locked" data-points="40" data-card="4">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">40 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani4.jpg" alt="Anı 4" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💗%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Frontend Bahar</h3>
+                            <p>Yaptığın her şey benim için çok anlamlı. Ölene kadar benimle kalacaklar.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 50 Puan - Kart 5 -->
+                <div class="memory-card locked" data-points="50" data-card="5">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">50 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani5.jpg" alt="Anı 5" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💓%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Bitirici İlişki</h3>
+                            <p>Saymama gerek yok, ilişkimize laf atan herkesin ilişkisi son buldu😜</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 60 Puan - Kart 6 -->
+                <div class="memory-card locked" data-points="60" data-card="6">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">60 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani6.jpg" alt="Anı 6" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💞%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>İlk Datemiz</h3>
+                            <p>Hediyeleri söylememek için yaşanan heyecan, alırken hangisini alayım diye stres yaptığım anlar...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 70 Puan - Kart 7 -->
+                <div class="memory-card locked" data-points="70" data-card="7">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">70 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani7.jpg" alt="Anı 7" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💝%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Kürk Mantolu Madonna'm 🌅</h3>
+                            <p>O gün durakta elime verdiğin bilet...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 80 Puan - Kart 8 -->
+                <div class="memory-card locked" data-points="80" data-card="8">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">80 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani8.jpg" alt="Anı 8" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E💘%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Şimdilik Ufak😉</h3>
+                            <p>Seni mutlu etmek en büyük mutluluğum...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 90 Puan - Kart 9 -->
+                <div class="memory-card locked" data-points="90" data-card="9">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">90 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani9.jpg" alt="Anı 9" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E❤️%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>Ayak Basmadığımız Yer Kaldı Mı??</h3>
+                            <p>Nevşehir söyle bakalım sen mi büyüksün biz mi? 🌟</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 100 Puan - Kart 10 -->
+                <div class="memory-card locked" data-points="100" data-card="10">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">100 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani10.jpg" alt="Anı 10" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E👑%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>İlk Çiçek</h3>
+                            <p>Odanı çiçek bahçesi yapmadan 1 saat önce❤️</p>
+                        </div>
+                    </div>
+                </div>
+                                <!-- 110 Puan - Kart 11 -->
+                <div class="memory-card locked" data-points="110" data-card="11">
+                    <div class="card-lock">
+                        <span class="lock-icon">🔒</span>
+                        <span class="unlock-points">110 Puan</span>
+                    </div>
+                    <div class="card-content">
+                        <img src="resimler/anilar/ani11.jpg" alt="Anı 10" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23FFB6C1%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22%3E👑%3C/text%3E%3C/svg%3E'">
+                        <div class="card-text">
+                            <h3>B12'in Yok Ama Bunu Unutma Bahar!</h3>
+                            <p>Benim için her zaman özeldin ve özel kalacaksın. Bir gün benden sıkılıp ayrılsan bile veya başka birine aşık olsan bile, unutma beni Bahar çünkü ben seni hiçbir zaman unutmayacağım. Eline o yüzüğü takana kadar çabalayaçağıma "BB" sözü veriyorum sana. İyi ki varsın iyi benimlesin. Bir gün senle hayallerimi yaşarken elini tutup "Başardık" demek istiyorum. Bu çocuk seni çok seviyor emin olabilirsin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fotoğraf Büyütme Modal -->
+    <div id="imageModal" class="image-modal hidden">
+        <div class="image-modal-content">
+            <button class="close-image-modal">✖</button>
+            <img id="modalImage" src="" alt="Anı Fotoğrafı">
+            <div id="modalCaption" class="modal-caption"></div>
+        </div>
+    </div>
+    
+    <!-- Ayarlar Menüsü -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content settings-modal-content">
+            <h2>⚙️ Ayarlar</h2>
+            
+            <div class="settings-section">
+                <h3>🎨 Tema Seçimi</h3>
+                <div class="theme-buttons">
+                    <button class="theme-btn" data-theme="pink" style="background: linear-gradient(135deg, #FF6B9D, #C06C84);">
+                        💕 Pembe
+                    </button>
+                    <button class="theme-btn" data-theme="purple" style="background: linear-gradient(135deg, #8B4789, #6C5B7B);">
+                        💜 Mor
+                    </button>
+                    <button class="theme-btn" data-theme="blue" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        💙 Mavi
+                    </button>
+                    <button class="theme-btn" data-theme="sunset" style="background: linear-gradient(135deg, #FF6B6B, #FFE66D);">
+                        🌅 Gün Batımı
+                    </button>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3>� Skin Seçimi</h3>
+                <div class="skin-selection">
+                    <div class="skin-item active-skin" data-skin="player1">
+                        <img src="resimler/skins/player1.png" alt="Skin 1" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF69B4%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E1%3C/text%3E%3C/svg%3E'">
+                        <p>Skin 1</p>
+                    </div>
+                    <div class="skin-item" data-skin="player2">
+                        <img src="resimler/skins/player2.png" alt="Skin 2" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF1493%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E2%3C/text%3E%3C/svg%3E'">
+                        <p>Skin 2</p>
+                    </div>
+                    <div class="skin-item" data-skin="player3">
+                        <img src="resimler/skins/player3.png" alt="Skin 3" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF69B4%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E3%3C/text%3E%3C/svg%3E'">
+                        <p>Skin 3</p>
+                    </div>
+                    <div class="skin-item" data-skin="player4">
+                        <img src="resimler/skins/player4.png" alt="Skin 4" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF1493%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E4%3C/text%3E%3C/svg%3E'">
+                        <p>Skin 4</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3>�🔊 Ses Ayarları</h3>
+                <label class="switch-label">
+                    <span>Arka Plan Müziği</span>
+                    <input type="checkbox" id="musicToggle" checked>
+                </label>
+                <div class="volume-controls">
+                    <label for="musicVolume">Müzik Seviyesi: <span id="musicVolumeLabel">25%</span></label>
+                    <input type="range" id="musicVolume" min="0" max="100" step="1" value="25">
+
+                    <label for="sfxVolume">Efekt Seviyesi: <span id="sfxVolumeLabel">90%</span></label>
+                    <input type="range" id="sfxVolume" min="0" max="100" step="1" value="90">
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3>📳 Titreşim</h3>
+                <label class="switch-label">
+                    <span>Çarpınca Titret</span>
+                    <input type="checkbox" id="vibrationToggle" checked>
+                </label>
+            </div>
+            
+            <button id="closeSettingsButton" class="modal-button">Kapat</button>
+        </div>
+    </div>
+    
+    <div class="game-container hidden" id="gameContainer">
+        <button id="backToMenuBtn" class="back-to-menu">🏠 Ana Menü</button>
+        <canvas id="gameCanvas"></canvas>
+        <div id="startScreen" class="screen">
+            <h1>❤️ Uçan Baharingo ❤️</h1>
+            <p>Başlamak için SPACE tuşuna bas veya tıkla</p>
+            <p class="controls">Zıplamak için SPACE veya ekrana tıkla</p>
+        </div>
+        <div id="romanticMessage" class="romantic-message hidden"></div>
+        <div id="gameOverScreen" class="screen hidden">
+            <h1>Oyun Bitti!</h1>
+            <p>Skor: <span id="finalScore">0</span></p>
+            <p>En Yüksek Skor: <span id="highScore">0</span></p>
+            <button id="restartBtn">Tekrar Oyna</button>
+        </div>
+        <div id="scoreDisplay">0</div>
+    </div>
+    
+    <script>
+        // Arka planda uçan kalpler oluştur
+        function createFloatingHearts() {
+            const heartsContainer = document.getElementById('heartsBackground');
+            const heartSymbols = ['❤️', '💕', '💖', '💗', '💓', '💞'];
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 30 + 15) + 'px';
+                heart.style.animationDelay = Math.random() * 10 + 's';
+                heart.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                heartsContainer.appendChild(heart);
+            }
+        }
+        
+        createFloatingHearts();
+        
+        // Birlikte geçen süre sayacı
+        const startDate = new Date('2025-01-09T00:00:00'); // 09.01.2025
+        
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+            
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            let timerText = '';
+            if (years > 0) timerText += `${years} Yıl `;
+            timerText += `${days} Gün ${hours} Saat ${minutes} Dakika ${seconds} Saniye`;
+            
+            document.getElementById('timerDisplay').textContent = timerText;
+        }
+        
+        // İlk çalıştır ve her saniye güncelle
+        updateTimer();
+        setInterval(updateTimer, 1000);
+        
+        // Tema sistemi
+        const themes = {
+            pink: {
+                bg: 'linear-gradient(135deg, #FF6B9D 0%, #C06C84 50%, #6C5B7B 100%)',
+                canvas: 'linear-gradient(to bottom, #FFB6C1 0%, #FFE4E1 30%, #FFC0CB 60%, #FFB3D9 100%)',
+                pipe: ['#FF1493', '#FF69B4', '#FFB6C1']
+            },
+            purple: {
+                bg: 'linear-gradient(135deg, #8B4789 0%, #6C5B7B 50%, #4A4E69 100%)',
+                canvas: 'linear-gradient(to bottom, #DDA0DD 0%, #E6E6FA 30%, #D8BFD8 60%, #DDA0DD 100%)',
+                pipe: ['#8B008B', '#9370DB', '#BA55D3']
+            },
+            blue: {
+                bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4A5568 100%)',
+                canvas: 'linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 30%, #B0E0E6 60%, #ADD8E6 100%)',
+                pipe: ['#1E90FF', '#4169E1', '#6495ED']
+            },
+            sunset: {
+                bg: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 50%, #4ECDC4 100%)',
+                canvas: 'linear-gradient(to bottom, #FFB88C 0%, #FFE5B4 30%, #FFDAB9 60%, #FFB6C1 100%)',
+                pipe: ['#FF6347', '#FF8C00', '#FFA500']
+            }
+        };
+        
+        let currentTheme = localStorage.getItem('gameTheme') || 'pink';
+        
+        function applyTheme(themeName) {
+            currentTheme = themeName;
+            localStorage.setItem('gameTheme', themeName);
+            const theme = themes[themeName];
+            
+            // Ana menü arka planını değiştir
+            document.querySelectorAll('.main-menu, body').forEach(el => {
+                el.style.background = theme.bg;
+            });
+            
+            // Tema butonlarına aktif class ekle
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active-theme');
+            });
+            document.querySelector(`[data-theme="${themeName}"]`).classList.add('active-theme');
+        }
+        
+        // Sayfa yüklendiğinde temayı uygula
+        applyTheme(currentTheme);
+        
+        // Menü kontrolleri
+        const mainMenu = document.getElementById('mainMenu');
+        const gameContainer = document.getElementById('gameContainer');
+        const playButton = document.getElementById('playButton');
+        const secretNoteButton = document.getElementById('secretNoteButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const secretNoteModal = document.getElementById('secretNoteModal');
+        const settingsModal = document.getElementById('settingsModal');
+        const secretContent = document.getElementById('secretContent');
+        const unlockButton = document.getElementById('unlockButton');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const closeSettingsButton = document.getElementById('closeSettingsButton');
+        const closeSecretButton = document.getElementById('closeSecretButton');
+        const passwordInput = document.getElementById('passwordInput');
+        const errorMessage = document.getElementById('errorMessage');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const backToMenuBtn = document.getElementById('backToMenuBtn');
+        const musicToggle = document.getElementById('musicToggle');
+    const musicVolume = document.getElementById('musicVolume');
+    const sfxVolume = document.getElementById('sfxVolume');
+    const musicVolumeLabel = document.getElementById('musicVolumeLabel');
+    const sfxVolumeLabel = document.getElementById('sfxVolumeLabel');
+    
+    // Anı Kartları elementleri
+    const memoryCardsButton = document.getElementById('memoryCardsButton');
+    const memoryCardsScreen = document.getElementById('memoryCardsScreen');
+    const closeMemoryCardsButton = document.getElementById('closeMemoryCardsButton');
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+    const closeImageModal = document.querySelector('.close-image-modal');
+        
+        // Şifre buraya (istediğin şifreyi değiştir!)
+        const SECRET_PASSWORD = "090125"; // Bu şifreyi değiştirebilirsin!
+        
+        // Oyna butonuna tıklayınca
+        playButton.addEventListener('click', () => {
+            mainMenu.classList.add('hidden');
+            gameContainer.classList.remove('hidden');
+            // Müziği başlat (sadece müzik açıksa)
+            if (musicToggle.checked) {
+                backgroundMusic.play().catch(err => {
+                    console.log('Müzik otomatik başlatılamadı:', err);
+                });
+            }
+            // Oyunu başlangıç durumuna getir
+            if (typeof initializeGame === 'function') {
+                initializeGame();
+            }
+        });
+        
+        // Ana Menüye dön butonu
+        backToMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            gameContainer.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+            // Oyunu sıfırla
+            if (typeof resetGameCompletely === 'function') {
+                resetGameCompletely();
+            }
+        });
+        
+        // Gizli Not butonuna tıklayınca
+        secretNoteButton.addEventListener('click', () => {
+            secretNoteModal.classList.remove('hidden');
+            passwordInput.value = '';
+            errorMessage.classList.add('hidden');
+            passwordInput.focus();
+        });
+        
+        // Ayarlar butonuna tıklayınca
+        settingsButton.addEventListener('click', () => {
+            settingsModal.classList.remove('hidden');
+        });
+        
+        // Kilidi aç butonuna tıklayınca
+        unlockButton.addEventListener('click', () => {
+            if (passwordInput.value === SECRET_PASSWORD) {
+                secretNoteModal.classList.add('hidden');
+                secretContent.classList.remove('hidden');
+            } else {
+                errorMessage.classList.remove('hidden');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+        
+        // Enter tuşuyla da şifre girilebilsin
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                unlockButton.click();
+            }
+        });
+        
+        // Modal'ı kapat
+        closeModalButton.addEventListener('click', () => {
+            secretNoteModal.classList.add('hidden');
+        });
+        
+        // Gizli notu kapat
+        closeSecretButton.addEventListener('click', () => {
+            secretContent.classList.add('hidden');
+        });
+        
+        // Ayarları kapat
+        closeSettingsButton.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+        
+        // Tema butonları
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.getAttribute('data-theme');
+                applyTheme(theme);
+                // Oyun canvas temasını da güncelle
+                if (typeof updateGameTheme === 'function') {
+                    updateGameTheme(theme);
+                }
+            });
+        });
+        
+        // Skin seçimi
+        document.querySelectorAll('.skin-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const skin = item.getAttribute('data-skin');
+                
+                // Aktif skin'i değiştir
+                document.querySelectorAll('.skin-item').forEach(i => i.classList.remove('active-skin'));
+                item.classList.add('active-skin');
+                
+                // Skin'i kaydet ve yükle
+                if (typeof changeSkin === 'function') {
+                    changeSkin(skin);
+                }
+            });
+        });
+        
+        // Müzik toggle
+        musicToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                backgroundMusic.play().catch(err => console.log('Müzik başlatılamadı:', err));
+                localStorage.setItem('musicEnabled', 'true');
+            } else {
+                backgroundMusic.pause();
+                localStorage.setItem('musicEnabled', 'false');
+            }
+        });
+
+        // Volume sliders
+        function setMusicVolumeLabel(v) {
+            musicVolumeLabel.textContent = Math.round(v) + '%';
+        }
+        function setSfxVolumeLabel(v) {
+            sfxVolumeLabel.textContent = Math.round(v) + '%';
+        }
+
+        musicVolume.addEventListener('input', (e) => {
+            const val = e.target.value;
+            localStorage.setItem('musicVolume', val);
+            setMusicVolumeLabel(val);
+            // set audio manager if available
+            if (window.AudioManager) {
+                AudioManager.setMusicVolume(val / 100);
+            } else {
+                // fallback: set element volume
+                backgroundMusic.volume = Math.max(0, Math.min(1, (val/100)));
+            }
+        });
+
+        sfxVolume.addEventListener('input', (e) => {
+            const val = e.target.value;
+            localStorage.setItem('sfxVolume', val);
+            setSfxVolumeLabel(val);
+            if (window.AudioManager) {
+                AudioManager.setSfxVolume(val / 100);
+            }
+        });
+        
+        // Titreşim toggle
+        const vibrationToggle = document.getElementById('vibrationToggle');
+        vibrationToggle.addEventListener('change', (e) => {
+            if (typeof toggleVibration === 'function') {
+                toggleVibration(e.target.checked);
+            }
+        });
+        
+        // Sayfa yüklendiğinde skin seçimini güncelle
+        window.addEventListener('load', () => {
+            const savedSkin = localStorage.getItem('playerSkin') || 'player1';
+            document.querySelectorAll('.skin-item').forEach(item => {
+                if (item.getAttribute('data-skin') === savedSkin) {
+                    item.classList.add('active-skin');
+                } else {
+                    item.classList.remove('active-skin');
+                }
+            });
+            
+            // Titreşim ayarını yükle
+            const vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
+            vibrationToggle.checked = vibrationEnabled;
+            
+            // Müzik ayarını yükle
+            const musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
+            musicToggle.checked = musicEnabled;
+            if (!musicEnabled) {
+                backgroundMusic.pause();
+            }
+            // Load saved volumes
+            const savedMusicVol = parseInt(localStorage.getItem('musicVolume'));
+            const savedSfxVol = parseInt(localStorage.getItem('sfxVolume'));
+            if (!isNaN(savedMusicVol)) {
+                musicVolume.value = savedMusicVol;
+                setMusicVolumeLabel(savedMusicVol);
+                if (window.AudioManager) AudioManager.setMusicVolume(savedMusicVol / 100);
+                else backgroundMusic.volume = Math.max(0, Math.min(1, savedMusicVol / 100));
+            }
+            if (!isNaN(savedSfxVol)) {
+                sfxVolume.value = savedSfxVol;
+                setSfxVolumeLabel(savedSfxVol);
+                if (window.AudioManager) AudioManager.setSfxVolume(savedSfxVol / 100);
+            }
+            
+            // Anı kartlarını yükle ve kilitleri kontrol et
+            updateMemoryCards();
+        });
+        
+        // Test yardımcı fonksiyonlar (geliştirme için)
+        window.setHighScoreForTest = function(score) {
+            localStorage.setItem('highScore', String(score));
+            location.reload();
+        };
+        
+        window.resetProgress = function() {
+            localStorage.setItem('highScore', '0');
+            localStorage.setItem('unlockedCards', '[]');
+            location.reload();
+        };
+        
+        // Anı Kartları Fonksiyonları
+        function getUnlockedCards() {
+            const unlocked = localStorage.getItem('unlockedCards');
+            return unlocked ? JSON.parse(unlocked) : [];
+        }
+        
+        function saveUnlockedCards(unlockedCards) {
+            localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
+        }
+        
+        function unlockCard(cardNumber) {
+            const unlockedCards = getUnlockedCards();
+            if (!unlockedCards.includes(cardNumber)) {
+                unlockedCards.push(cardNumber);
+                saveUnlockedCards(unlockedCards);
+                return true; // Yeni açıldı
+            }
+            return false; // Zaten açıktı
+        }
+        
+        function updateMemoryCards() {
+            const highScore = parseInt(localStorage.getItem('highScore')) || 0;
+            const memoryCards = document.querySelectorAll('.memory-card');
+            
+            memoryCards.forEach(card => {
+                const requiredPoints = parseInt(card.getAttribute('data-points'));
+                const cardNumber = parseInt(card.getAttribute('data-card'));
+                
+                if (highScore >= requiredPoints) {
+                    // Kart açılmalı
+                    const wasNewlyUnlocked = unlockCard(cardNumber);
+                    card.classList.remove('locked');
+                    
+                    // Eğer yeni açıldıysa animasyon göster
+                    if (wasNewlyUnlocked) {
+                        card.classList.add('unlock-animation');
+                        setTimeout(() => {
+                            card.classList.remove('unlock-animation');
+                        }, 800);
+                    }
+                } else {
+                    // Kart kilitli kalmalı
+                    card.classList.add('locked');
+                }
+            });
+        }
+        
+        // Anı Kartları butonuna tıklayınca
+        memoryCardsButton.addEventListener('click', () => {
+            mainMenu.classList.add('hidden');
+            memoryCardsScreen.classList.remove('hidden');
+            updateMemoryCards(); // Kartları güncelle
+        });
+        
+        // Anı Kartları ekranını kapat
+        closeMemoryCardsButton.addEventListener('click', () => {
+            memoryCardsScreen.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+        });
+        
+        // Kart tıklama - fotoğraf büyütme (sadece açık kartlar için)
+        document.querySelectorAll('.memory-card').forEach(card => {
+            card.addEventListener('click', () => {
+                if (!card.classList.contains('locked')) {
+                    const img = card.querySelector('img');
+                    const title = card.querySelector('h3').textContent;
+                    const description = card.querySelector('p').textContent;
+                    
+                    modalImage.src = img.src;
+                    modalCaption.innerHTML = `<h3>${title}</h3><p>${description}</p>`;
+                    imageModal.classList.remove('hidden');
+                }
+            });
+        });
+        
+        // Fotoğraf modalını kapat
+        closeImageModal.addEventListener('click', () => {
+            imageModal.classList.add('hidden');
+        });
+        
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.add('hidden');
+            }
+        });
+        
+        // game.js'den çağrılacak - yeni high score olduğunda
+        window.checkAndUnlockCards = function() {
+            updateMemoryCards();
+        };
+    </script>
+    <script src="game.js"></script>
+</body>
+</html>

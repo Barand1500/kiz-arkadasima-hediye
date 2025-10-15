@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anı Kartları Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #667eea;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .card-info {
+            padding: 20px;
+        }
+        .card-info h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Anı Kartları Test 📸</h1>
+        
+        <div class="grid">
+            <!-- Kart 1 -->
+            <div class="card">
+                <img src="resimler/anilar/ani1.jpg" alt="Anı 1" onerror="this.style.background='#FFB6C1'; this.innerHTML='📸 ani1.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 1 - 10 Puan</h2>
+                    <p>İlk Buluşmamız 💕</p>
+                </div>
+            </div>
+            
+            <!-- Kart 2 -->
+            <div class="card">
+                <img src="resimler/anilar/ani2.jpg" alt="Anı 2" onerror="this.style.background='#FFB6C1'; this.innerHTML='💕 ani2.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 2 - 20 Puan</h2>
+                    <p>İlk Çıkışımız 🌹</p>
+                </div>
+            </div>
+            
+            <!-- Kart 3 -->
+            <div class="card">
+                <img src="resimler/anilar/ani3.jpg" alt="Anı 3" onerror="this.style.background='#FFB6C1'; this.innerHTML='💖 ani3.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 3 - 30 Puan</h2>
+                    <p>Birlikte Güldüğümüz Anlar 😊</p>
+                </div>
+            </div>
+            
+            <!-- Kart 4 -->
+            <div class="card">
+                <img src="resimler/anilar/ani4.jpg" alt="Anı 4" onerror="this.style.background='#FFB6C1'; this.innerHTML='💗 ani4.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 4 - 40 Puan</h2>
+                    <p>İlk Hediyelerimiz 🎁</p>
+                </div>
+            </div>
+            
+            <!-- Kart 5 -->
+            <div class="card">
+                <img src="resimler/anilar/ani5.jpg" alt="Anı 5" onerror="this.style.background='#FFB6C1'; this.innerHTML='💓 ani5.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 5 - 50 Puan</h2>
+                    <p>Birlikte Yemek Yediğimiz Anlar 🍽️</p>
+                </div>
+            </div>
+            
+            <!-- Kart 6 -->
+            <div class="card">
+                <img src="resimler/anilar/ani6.jpg" alt="Anı 6" onerror="this.style.background='#FFB6C1'; this.innerHTML='💞 ani6.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 6 - 60 Puan</h2>
+                    <p>Yürüyüşlerimiz 🚶‍♂️🚶‍♀️</p>
+                </div>
+            </div>
+            
+            <!-- Kart 7 -->
+            <div class="card">
+                <img src="resimler/anilar/ani7.jpg" alt="Anı 7" onerror="this.style.background='#FFB6C1'; this.innerHTML='💝 ani7.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 7 - 70 Puan</h2>
+                    <p>Gün Batımı Anlarımız 🌅</p>
+                </div>
+            </div>
+            
+            <!-- Kart 8 -->
+            <div class="card">
+                <img src="resimler/anilar/ani8.jpg" alt="Anı 8" onerror="this.style.background='#FFB6C1'; this.innerHTML='💘 ani8.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 8 - 80 Puan</h2>
+                    <p>Sürprizlerimiz 🎊</p>
+                </div>
+            </div>
+            
+            <!-- Kart 9 -->
+            <div class="card">
+                <img src="resimler/anilar/ani9.jpg" alt="Anı 9" onerror="this.style.background='#FFB6C1'; this.innerHTML='❤️ ani9.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 9 - 90 Puan</h2>
+                    <p>Özel Anlarımız 🌟</p>
+                </div>
+            </div>
+            
+            <!-- Kart 10 -->
+            <div class="card">
+                <img src="resimler/anilar/ani10.jpg" alt="Anı 10" onerror="this.style.background='#FFB6C1'; this.innerHTML='👑 ani10.jpg bulunamadı';">
+                <div class="card-info">
+                    <h2>Kart 10 - 100 Puan</h2>
+                    <p>Geleceğimiz 💍</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('Test sayfası yüklendi');
+        console.log('Fotoğraf yolları doğru mu kontrol ediliyor...');
+        
+        // Tüm resimleri kontrol et
+        document.querySelectorAll('img').forEach((img, index) => {
+            img.addEventListener('load', () => {
+                console.log(`✅ ${img.src} başarıyla yüklendi`);
+            });
+            img.addEventListener('error', () => {
+                console.error(`❌ ${img.src} bulunamadı!`);
+            });
+        });
+    </script>
+</body>
+</html>
