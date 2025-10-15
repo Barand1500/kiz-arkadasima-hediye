@@ -122,8 +122,8 @@ const player = {
     width: 50,
     height: 50,
     velocity: 0,
-    gravity: 0.4,  // 0.5'ten 0.4'e düşürdük - daha yavaş düşüş
-    jump: -9,      // -8'den -9'a çıkardık - daha güçlü zıplama
+    gravity: 0.35,  // 0.4'ten 0.35'e düşürdük - daha yumuşak düşüş (mobil için)
+    jump: -8.5,     // -9'dan -8.5'e düşürdük - daha kontrollü zıplama
     rotation: 0,
     image: new Image()
 };
@@ -143,8 +143,8 @@ loadPlayerSkin();
 // Borular
 const pipes = [];
 const pipeWidth = 60;
-const pipeGap = 220;  // 200'den 220'ye çıkardık - daha geniş geçiş
-const pipeSpeed = 1.8; // 2'den 1.8'e düşürdük - daha yavaş hareket
+const pipeGap = 280;  // 220'den 280'e çıkardık - çok daha geniş geçiş (mobil için)
+const pipeSpeed = 1.6; // 1.8'den 1.6'ya düşürdük - daha yavaş hareket
 let frameCount = 0;
 
 // Zemin
