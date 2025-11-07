@@ -31,12 +31,12 @@ window.addEventListener('error', function (e) {
 
 // Performance tuning: detect mobile and set caps
 const IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth <= 480;
-const MAX_PARTICLES = IS_MOBILE ? 40 : 120;
-const MAX_TRAILS = IS_MOBILE ? 4 : 12;
-const CLOUD_COUNT = IS_MOBILE ? 2 : 3;
+const MAX_PARTICLES = IS_MOBILE ? 25 : 120;  // 40'tan 25'e düşürdük - daha az partikül
+const MAX_TRAILS = IS_MOBILE ? 2 : 12;       // 4'ten 2'ye düşürdük - daha az iz efekti
+const CLOUD_COUNT = IS_MOBILE ? 1 : 3;       // 2'den 1'e düşürdük - daha az bulut
 
-// Frame throttling: mobile -> 30fps, desktop -> 60fps
-const TARGET_FPS = IS_MOBILE ? 30 : 60;
+// Frame throttling: mobile -> 45fps (daha akıcı), desktop -> 60fps
+const TARGET_FPS = IS_MOBILE ? 45 : 60;      // 30'dan 45'e çıkardık - daha akıcı
 const MIN_FRAME_INTERVAL = 1000 / TARGET_FPS;
 let lastFrameTime = performance.now();
 
@@ -157,8 +157,8 @@ const player = {
     width: 50,
     height: 50,
     velocity: 0,
-    gravity: 0.35,  // 0.4'ten 0.35'e düşürdük - daha yumuşak düşüş (mobil için)
-    jump: -8.5,     // -9'dan -8.5'e düşürdük - daha kontrollü zıplama
+    gravity: 0.4,   // Geri 0.4'e çıkardık - daha hızlı düşüş (mobilde daha dinamik)
+    jump: -7.0,     // -8.5'ten -7.0'a düşürdük - daha az zıplama (çok yüksek zıplamayı engelledik)
     rotation: 0,
     image: new Image()
 };
@@ -180,11 +180,11 @@ const pipes = [];
 const pipeWidth = 60;
 const pipeGap = 280;  // 220'den 280'e çıkardık - çok daha geniş geçiş (mobil için)
 
-// Hız ayarları (default değerler)
+// Hız ayarları (default değerler) - MOBİL İÇİN DAHA HIZLI
 const BASES = {
-    pipeSpeed: 1.6, // baz boru hızı
-    groundSpeed: 2, // baz zemin hızı
-    playerJump: -8.5 // baz zıplama kuvveti (negatif)
+    pipeSpeed: 2.2,    // 1.6'dan 2.2'ye çıkardık - mobilde daha hızlı
+    groundSpeed: 2.8,  // 2'den 2.8'e çıkardık - mobilde daha hızlı
+    playerJump: -7.0   // -8.5'ten -7.0'a düşürdük - daha az zıplama
 };
 
 // Aktif hız değişkenleri (uygulama setGameSpeed() ile değişecek)
@@ -240,10 +240,10 @@ class Particle {
     }
 }
 
-// Partikül oluşturma fonksiyonları
+// Partikül oluşturma fonksiyonları - MOBİLDE DAHA AZ PARTIKÜL
 function createScoreParticles(x, y) {
     const colors = ['#FFD700', '#FFA500', '#FF69B4', '#FF1493', '#FF00FF'];
-    const count = IS_MOBILE ? 6 : 15;
+    const count = IS_MOBILE ? 3 : 15;  // 6'dan 3'e düşürdük - daha az partikül
     for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)], 
             Math.random() * 3 + 2));
@@ -252,7 +252,7 @@ function createScoreParticles(x, y) {
 
 function createChocolateParticles(x, y) {
     const colors = ['#8B4513', '#D2691E', '#DEB887', '#F4A460', '#FFE4B5'];
-    const count = IS_MOBILE ? 5 : 10;
+    const count = IS_MOBILE ? 2 : 10;  // 5'ten 2'ye düşürdük - daha az partikül
     for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)],
             Math.random() * 4 + 3));
@@ -261,7 +261,7 @@ function createChocolateParticles(x, y) {
 
 function createJumpParticles(x, y) {
     const colors = ['#87CEEB', '#B0E0E6', '#ADD8E6', '#E0FFFF'];
-    const count = IS_MOBILE ? 3 : 8;
+    const count = IS_MOBILE ? 1 : 8;  // 3'ten 1'e düşürdük - daha az partikül
     for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)],
             Math.random() * 2 + 1, (Math.random() - 0.5) * 3, Math.random() * 2 + 1));
@@ -270,7 +270,7 @@ function createJumpParticles(x, y) {
 
 function createCrashParticles(x, y) {
     const colors = ['#FF0000', '#FF4500', '#FF6347', '#DC143C'];
-    const count = IS_MOBILE ? 12 : 25;
+    const count = IS_MOBILE ? 8 : 25;  // 12'den 8'e düşürdük - daha az partikül
     for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)],
             Math.random() * 5 + 3));
@@ -531,8 +531,9 @@ function handleInput() {
         playJumpSound();
         // Zıplama partikülü
         createJumpParticles(player.x + player.width / 2, player.y + player.height);
-        // Trail ekle
-        if (frameCount % 3 === 0) {
+        // Trail ekle - MOBİLDE DAHA SEYREK (her 6 frame'de 1, masaüstünde her 3'te 1)
+        const trailInterval = IS_MOBILE ? 6 : 3;
+        if (frameCount % trailInterval === 0) {
             trails.push(new Trail(player.x, player.y, player.width, player.height));
         }
     } else if (gameState === 'gameOver') {
