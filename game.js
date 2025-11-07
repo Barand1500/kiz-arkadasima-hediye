@@ -410,36 +410,6 @@ function drawTrails() {
     trails.forEach(trail => trail.draw());
 }
 
-// Canvas boyutlarını responsive yap
-function resizeCanvas() {
-    const container = canvas.parentElement;
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
-    
-    // Oyun objelerini yeniden konumlandır
-    player.x = canvas.width * 0.25;
-    player.y = canvas.height * 0.4;
-    ground.y = canvas.height - 50;
-    // Ghost'ları yeniden oluştur (canvas boyutu değişince)
-    // Schedule ghost recreation after the current tick so the rest of the file
-    // (including the `ghosts` const initialization) has a chance to run first.
-    // This avoids referencing a `ghosts` binding while it's still in the temporal
-    // dead zone (which would throw a ReferenceError).
-    if (typeof createGhosts === 'function') {
-        setTimeout(() => {
-            try {
-                createGhosts(2);
-            } catch (e) {
-                // If it still fails, silently ignore — the later explicit
-                // createGhosts() call (after its declaration) will handle it.
-            }
-        }, 0);
-    }
-}
-
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
 // Arka plan bulutları
 const clouds = [];
 for (let i = 0; i < CLOUD_COUNT; i++) {
@@ -451,7 +421,7 @@ for (let i = 0; i < CLOUD_COUNT; i++) {
     });
 }
 
-// Hayaletler (Cadılar Bayramı için)
+// Hayaletler (Cadılar Bayramı için) - ÖNCE TANIMLA
 const ghosts = [];
 function createGhosts(count = 2) {
     ghosts.length = 0;
@@ -489,6 +459,23 @@ function drawGhosts() {
     });
     ctx.restore();
 }
+
+// Canvas boyutlarını responsive yap
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    
+    // Oyun objelerini yeniden konumlandır
+    player.x = canvas.width * 0.25;
+    player.y = canvas.height * 0.4;
+    ground.y = canvas.height - 50;
+    // Ghost'ları yeniden oluştur (artık güvenli - ghosts zaten tanımlı)
+    createGhosts(2);
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 // İlk başta birkaç hayalet oluştur
 createGhosts(2);
