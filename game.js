@@ -98,8 +98,8 @@ const chocolateImages = [
     'resimler/cikolatalar/patso.png',
     'resimler/cikolatalar/karam.png', 
     'resimler/cikolatalar/wapps.png',
-    'resimler/cikolatalar/mantı.png',
-    'resimler/cikolatalar/chocolate5.png'
+    'resimler/cikolatalar/mantı.png'
+    // chocolate5.png kaldırıldı - dosya yok
 ];
 
 
@@ -149,6 +149,14 @@ let currentGameTheme = localStorage.getItem('gameTheme') || 'pink';
 
 function updateGameTheme(themeName) {
     currentGameTheme = themeName;
+    // Halloween temasına geçildiğinde hayaletleri oluştur
+    if (themeName === 'halloween' && typeof createGhosts === 'function') {
+        createGhosts(2);
+    }
+    // Diğer temalara geçildiğinde hayaletleri temizle
+    if (themeName !== 'halloween' && ghosts) {
+        ghosts.length = 0;
+    }
 }
 
 const player = {
@@ -440,7 +448,9 @@ function createGhosts(count = 2) {
 
 function updateGhosts() {
     if (currentGameTheme !== 'halloween') return;
+    if (!ghosts || ghosts.length === 0) return; // Güvenlik kontrolü
     ghosts.forEach(g => {
+        if (!g) return; // null/undefined kontrol
         g.x += g.vx;
         g.phase += 0.02;
         g.y += Math.sin(g.phase) * 0.3;
@@ -451,8 +461,11 @@ function updateGhosts() {
 }
 
 function drawGhosts() {
+    if (currentGameTheme !== 'halloween') return; // Halloween değilse çizme
+    if (!ghosts || ghosts.length === 0) return; // Güvenlik kontrolü
     ctx.save();
     ghosts.forEach(g => {
+        if (!g) return; // null/undefined kontrol
         ctx.globalAlpha = 0.9;
         ctx.font = `${g.size}px Arial`;
         ctx.fillText('👻', g.x, g.y);
