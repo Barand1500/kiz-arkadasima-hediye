@@ -421,7 +421,11 @@ function resizeCanvas() {
     player.y = canvas.height * 0.4;
     ground.y = canvas.height - 50;
     // Ghost'ları yeniden oluştur (canvas boyutu değişince)
-    if (typeof createGhosts === 'function') createGhosts(2);
+    // Only recreate ghosts if the ghosts array and factory exist (avoid TDZ if this
+    // function runs before the ghost declarations are parsed)
+    if (typeof ghosts !== 'undefined' && typeof createGhosts === 'function') {
+        createGhosts(2);
+    }
 }
 
 resizeCanvas();
