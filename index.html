@@ -298,7 +298,11 @@
                     </button>
                     <!-- Mavi tema kaldırıldı; yerine Cadılar Bayramı teması eklendi -->
                     <button class="theme-btn" data-theme="halloween" style="background: linear-gradient(135deg, #2b0b17, #5a0f00);">
-                        � Cadılar Bayramı
+                        🎃 Cadılar Bayramı
+                    </button>
+                    <!-- Noel Teması -->
+                    <button class="theme-btn" data-theme="christmas" style="background: linear-gradient(135deg, #0a4d2e, #c41e3a);">
+                        🎄 Noel
                     </button>
                 </div>
             </div>
@@ -308,19 +312,19 @@
                 <div class="skin-selection">
                     <div class="skin-item active-skin" data-skin="player1">
                         <img src="resimler/skins/player1.png" alt="Skin 1" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF69B4%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E1%3C/text%3E%3C/svg%3E'">
-                        <p>Skin 1</p>
+                        <p>Üzgün Bahar</p>
                     </div>
                     <div class="skin-item" data-skin="player2">
                         <img src="resimler/skins/player2.png" alt="Skin 2" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF1493%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E2%3C/text%3E%3C/svg%3E'">
-                        <p>Skin 2</p>
+                        <p>Montlu Baran</p>
                     </div>
                     <div class="skin-item" data-skin="player3">
                         <img src="resimler/skins/player3.png" alt="Skin 3" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF69B4%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E3%3C/text%3E%3C/svg%3E'">
-                        <p>Skin 3</p>
+                        <p>Cadı Bahar</p>
                     </div>
                     <div class="skin-item" data-skin="player4">
                         <img src="resimler/skins/player4.png" alt="Skin 4" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23FF1493%22 width=%2250%22 height=%2250%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22%3E4%3C/text%3E%3C/svg%3E'">
-                        <p>Skin 4</p>
+                        <p>Kipta Kurdu Baran</p>
                     </div>
                 </div>
             </div>
@@ -441,6 +445,12 @@
                 bg: 'linear-gradient(135deg, #1b0b2b 0%, #3a0f14 50%, #5a0f00 100%)',
                 canvas: 'linear-gradient(to bottom, #0b0710 0%, #2b0b17 30%, #4a1200 60%, #100306 100%)',
                 pipe: ['#5a2b00', '#ff7a00', '#ffb347']
+            },
+            // Noel Teması
+            christmas: {
+                bg: 'linear-gradient(135deg, #0a4d2e 0%, #165a3c 50%, #c41e3a 100%)',
+                canvas: 'linear-gradient(to bottom, #0a1e3d 0%, #1a4d6e 30%, #2b5f7f 60%, #0f2940 100%)',
+                pipe: ['#ff0000', '#ffffff', '#ff0000']
             }
         };
         

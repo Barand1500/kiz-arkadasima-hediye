@@ -142,6 +142,10 @@ const gameThemes = {
     halloween: {
         canvas: ['#0b0710', '#2b0b17', '#4a1200', '#100306'],
         pipe: ['#5a2b00', '#ff7a00', '#ffb347']
+    },
+    christmas: {
+        canvas: ['#0a1e3d', '#1a4d6e', '#2b5f7f', '#0f2940'],  // Gece gökyüzü (kar için)
+        pipe: ['#ff0000', '#ffffff', '#ff0000']  // Kırmızı-beyaz şeker kamışı borular
     }
 };
 
@@ -152,10 +156,17 @@ function updateGameTheme(themeName) {
     // Halloween temasına geçildiğinde hayaletleri oluştur
     if (themeName === 'halloween' && typeof createGhosts === 'function') {
         createGhosts(2);
+        if (snowflakes) snowflakes.length = 0; // Kar tanelerini temizle
     }
-    // Diğer temalara geçildiğinde hayaletleri temizle
-    if (themeName !== 'halloween' && ghosts) {
-        ghosts.length = 0;
+    // Noel temasına geçildiğinde kar tanelerini oluştur
+    else if (themeName === 'christmas' && typeof createSnowflakes === 'function') {
+        createSnowflakes(30);
+        if (ghosts) ghosts.length = 0; // Hayaletleri temizle
+    }
+    // Diğer temalara geçildiğinde hepsini temizle
+    else {
+        if (ghosts) ghosts.length = 0;
+        if (snowflakes) snowflakes.length = 0;
     }
 }
 
@@ -473,6 +484,53 @@ function drawGhosts() {
     ctx.restore();
 }
 
+// Kar taneleri (Noel için)
+const snowflakes = [];
+function createSnowflakes(count = 30) {
+    snowflakes.length = 0;
+    for (let i = 0; i < count; i++) {
+        snowflakes.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 3 + 2,
+            speed: Math.random() * 1 + 0.5,
+            drift: (Math.random() - 0.5) * 0.5
+        });
+    }
+}
+
+function updateSnowflakes() {
+    if (currentGameTheme !== 'christmas') return;
+    if (!snowflakes || snowflakes.length === 0) return;
+    snowflakes.forEach(s => {
+        if (!s) return;
+        s.y += s.speed;
+        s.x += s.drift;
+        // Kar tanesi aşağı düştüğünde yukarı döndür
+        if (s.y > canvas.height) {
+            s.y = -10;
+            s.x = Math.random() * canvas.width;
+        }
+        // Yanlara kaçarsa geri getir
+        if (s.x < -10) s.x = canvas.width + 10;
+        if (s.x > canvas.width + 10) s.x = -10;
+    });
+}
+
+function drawSnowflakes() {
+    if (currentGameTheme !== 'christmas') return;
+    if (!snowflakes || snowflakes.length === 0) return;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    snowflakes.forEach(s => {
+        if (!s) return;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.restore();
+}
+
 // Canvas boyutlarını responsive yap
 function resizeCanvas() {
     const container = canvas.parentElement;
@@ -483,15 +541,23 @@ function resizeCanvas() {
     player.x = canvas.width * 0.25;
     player.y = canvas.height * 0.4;
     ground.y = canvas.height - 50;
-    // Ghost'ları yeniden oluştur (artık güvenli - ghosts zaten tanımlı)
-    createGhosts(2);
+    // Tema efektlerini yeniden oluştur
+    if (currentGameTheme === 'halloween') {
+        createGhosts(2);
+    } else if (currentGameTheme === 'christmas') {
+        createSnowflakes(30);
+    }
 }
 
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// İlk başta birkaç hayalet oluştur
-createGhosts(2);
+// İlk başta tema efektlerini oluştur
+if (currentGameTheme === 'halloween') {
+    createGhosts(2);
+} else if (currentGameTheme === 'christmas') {
+    createSnowflakes(30);
+}
 
 // Event Listeners
 document.addEventListener('keydown', (e) => {
@@ -1099,61 +1165,123 @@ function drawPipes() {
     const theme = gameThemes[currentGameTheme];
     
     pipes.forEach(pipe => {
-        // Ana boru gövdesi için gradient
-        const gradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipeWidth, 0);
-        gradient.addColorStop(0, theme.pipe[0]);
-        gradient.addColorStop(0.5, theme.pipe[1]);
-        gradient.addColorStop(1, theme.pipe[2]);
-        
         // Gölge efekti
         ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
         ctx.shadowBlur = 10;
         ctx.shadowOffsetX = 3;
         ctx.shadowOffsetY = 3;
         
-        ctx.fillStyle = gradient;
-        ctx.strokeStyle = theme.pipe[0];
-        ctx.lineWidth = 2;
-        
-        // Üst boru - yuvarlak köşeli
-        roundRect(ctx, pipe.x, 0, pipeWidth, pipe.topHeight, 10);
-        ctx.fill();
-        ctx.stroke();
-        
-        // Üst boru başlığı - daha büyük ve şık
-        const capGradient = ctx.createLinearGradient(pipe.x - 8, 0, pipe.x + pipeWidth + 8, 0);
-        capGradient.addColorStop(0, theme.pipe[1]);
-        capGradient.addColorStop(0.5, theme.pipe[0]);
-        capGradient.addColorStop(1, theme.pipe[1]);
-        ctx.fillStyle = capGradient;
-        roundRect(ctx, pipe.x - 8, pipe.topHeight - 25, pipeWidth + 16, 25, 8);
-        ctx.fill();
-        ctx.stroke();
-        
-        // Parlama efekti
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        roundRect(ctx, pipe.x + 5, 0, 8, pipe.topHeight - 25, 3);
-        ctx.fill();
-        
-        // Alt boru - yuvarlak köşeli
-        ctx.shadowBlur = 10;
-        ctx.fillStyle = gradient;
-        roundRect(ctx, pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY, 10);
-        ctx.fill();
-        ctx.stroke();
-        
-        // Alt boru başlığı
-        ctx.fillStyle = capGradient;
-        roundRect(ctx, pipe.x - 8, pipe.bottomY, pipeWidth + 16, 25, 8);
-        ctx.fill();
-        ctx.stroke();
-        
-        // Alt boru parlama efekti
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        roundRect(ctx, pipe.x + 5, pipe.bottomY + 25, 8, canvas.height - pipe.bottomY - 25, 3);
-        ctx.fill();
+        // Noel temasında şeker kamışı çizgili borular
+        if (currentGameTheme === 'christmas') {
+            // Üst boru - şeker kamışı deseni
+            ctx.save();
+            roundRect(ctx, pipe.x, 0, pipeWidth, pipe.topHeight, 10);
+            ctx.clip();
+            
+            // Kırmızı-beyaz çizgiler
+            const stripeWidth = 15;
+            for (let i = 0; i < pipe.topHeight + pipeWidth; i += stripeWidth * 2) {
+                ctx.fillStyle = i % (stripeWidth * 4) === 0 ? '#ff0000' : '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(pipe.x, i);
+                ctx.lineTo(pipe.x + pipeWidth, i - pipeWidth);
+                ctx.lineTo(pipe.x + pipeWidth, i - pipeWidth + stripeWidth);
+                ctx.lineTo(pipe.x, i + stripeWidth);
+                ctx.closePath();
+                ctx.fill();
+            }
+            ctx.restore();
+            
+            // Üst boru çerçeve
+            ctx.strokeStyle = '#cc0000';
+            ctx.lineWidth = 3;
+            roundRect(ctx, pipe.x, 0, pipeWidth, pipe.topHeight, 10);
+            ctx.stroke();
+            
+            // Alt boru - şeker kamışı deseni
+            ctx.save();
+            roundRect(ctx, pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY, 10);
+            ctx.clip();
+            
+            for (let i = 0; i < (canvas.height - pipe.bottomY) + pipeWidth; i += stripeWidth * 2) {
+                ctx.fillStyle = i % (stripeWidth * 4) === 0 ? '#ff0000' : '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(pipe.x, pipe.bottomY + i);
+                ctx.lineTo(pipe.x + pipeWidth, pipe.bottomY + i - pipeWidth);
+                ctx.lineTo(pipe.x + pipeWidth, pipe.bottomY + i - pipeWidth + stripeWidth);
+                ctx.lineTo(pipe.x, pipe.bottomY + i + stripeWidth);
+                ctx.closePath();
+                ctx.fill();
+            }
+            ctx.restore();
+            
+            // Alt boru çerçeve
+            ctx.strokeStyle = '#cc0000';
+            ctx.lineWidth = 3;
+            roundRect(ctx, pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY, 10);
+            ctx.stroke();
+            
+            // Boru başlıkları - altın rengi
+            ctx.fillStyle = '#ffd700';
+            roundRect(ctx, pipe.x - 8, pipe.topHeight - 25, pipeWidth + 16, 25, 8);
+            ctx.fill();
+            ctx.strokeStyle = '#b8860b';
+            ctx.stroke();
+            
+            roundRect(ctx, pipe.x - 8, pipe.bottomY, pipeWidth + 16, 25, 8);
+            ctx.fill();
+            ctx.stroke();
+        } else {
+            // Diğer temalar için normal gradient borular
+            const gradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipeWidth, 0);
+            gradient.addColorStop(0, theme.pipe[0]);
+            gradient.addColorStop(0.5, theme.pipe[1]);
+            gradient.addColorStop(1, theme.pipe[2]);
+            
+            ctx.fillStyle = gradient;
+            ctx.strokeStyle = theme.pipe[0];
+            ctx.lineWidth = 2;
+            
+            // Üst boru - yuvarlak köşeli
+            roundRect(ctx, pipe.x, 0, pipeWidth, pipe.topHeight, 10);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Üst boru başlığı - daha büyük ve şık
+            const capGradient = ctx.createLinearGradient(pipe.x - 8, 0, pipe.x + pipeWidth + 8, 0);
+            capGradient.addColorStop(0, theme.pipe[1]);
+            capGradient.addColorStop(0.5, theme.pipe[0]);
+            capGradient.addColorStop(1, theme.pipe[1]);
+            ctx.fillStyle = capGradient;
+            roundRect(ctx, pipe.x - 8, pipe.topHeight - 25, pipeWidth + 16, 25, 8);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Parlama efekti
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            roundRect(ctx, pipe.x + 5, 0, 8, pipe.topHeight - 25, 3);
+            ctx.fill();
+            
+            // Alt boru - yuvarlak köşeli
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = gradient;
+            roundRect(ctx, pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY, 10);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Alt boru başlığı
+            ctx.fillStyle = capGradient;
+            roundRect(ctx, pipe.x - 8, pipe.bottomY, pipeWidth + 16, 25, 8);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Alt boru parlama efekti
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            roundRect(ctx, pipe.x + 5, pipe.bottomY + 25, 8, canvas.height - pipe.bottomY - 25, 3);
+            ctx.fill();
+        }
         
         // Gölgeyi sıfırla
         ctx.shadowBlur = 0;
@@ -1178,6 +1306,16 @@ function drawPipes() {
                 ctx.fillStyle = 'rgba(255,255,255,0.25)';
                 ctx.fillText('🕸️', pipe.x + 8, Math.max(8, pipe.topHeight - 10));
                 ctx.fillStyle = '#000';
+            } else if (currentGameTheme === 'christmas') {
+                // Noel modu: cüce emoji
+                ctx.font = `${chocolateSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillText('🧝', chocolateX + chocolateSize / 2, chocolateY + chocolateSize / 2 + 12);
+                ctx.textAlign = 'left';
+                
+                // Hediye paketi sembolü biraz üstte
+                ctx.font = '20px Arial';
+                ctx.fillText('🎁', pipe.x + 8, Math.max(8, pipe.topHeight - 10));
             } else {
                 const chocolateImg = loadedChocolates[pipe.chocolateIndex];
                 if (chocolateImg && chocolateImg.complete && chocolateImg.naturalHeight !== 0) {
@@ -1300,8 +1438,26 @@ function draw() {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Arka planda uçan kalpler
-    if (currentGameTheme !== 'halloween') {
+    // Arka planda tema efektleri
+    if (currentGameTheme === 'halloween') {
+        // halloween: hayaletleri çiz
+        drawGhosts();
+    } else if (currentGameTheme === 'christmas') {
+        // Noel: kar taneleri ve Noel Baba/geyik emojileri
+        drawSnowflakes();
+        // Arka planda uçan Noel Baba ve geyikler
+        ctx.font = '24px Arial';
+        for (let i = 0; i < 3; i++) {
+            const x = (frameCount * 0.4 + i * 150) % (canvas.width + 80) - 80;
+            const y = 60 + i * 100;
+            if (i === 0) {
+                ctx.fillText('🎅', x, y);
+            } else {
+                ctx.fillText('🦌', x, y);
+            }
+        }
+    } else {
+        // Diğer temalar: uçan kalpler
         ctx.font = '20px Arial';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
         for (let i = 0; i < 5; i++) {
@@ -1309,9 +1465,6 @@ function draw() {
             const y = 50 + i * 80;
             ctx.fillText('💕', x, y);
         }
-    } else {
-        // halloween: hayaletleri çiz
-        drawGhosts();
     }
     
     // Çiz
@@ -1345,6 +1498,7 @@ function gameLoop(timestamp) {
             updatePlayer();
             updatePipes();
             updateGhosts();
+            updateSnowflakes(); // Kar tanelerini güncelle
             // Efektleri güncelle
             updateParticles();
             updateScorePopups();
