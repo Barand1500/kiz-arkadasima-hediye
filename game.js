@@ -2,6 +2,44 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Global error catcher - görünür hata olursa console'a yaz ve ekranda göster
+window.addEventListener('error', function (e) {
+    console.error('Unhandled error:', e.error || e.message, e.filename + ':' + e.lineno);
+    try {
+        let overlay = document.getElementById('jsErrorOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'jsErrorOverlay';
+            overlay.style.position = 'fixed';
+            overlay.style.left = '8px';
+            overlay.style.right = '8px';
+            overlay.style.bottom = '8px';
+            overlay.style.zIndex = 99999;
+            overlay.style.background = 'rgba(0,0,0,0.85)';
+            overlay.style.color = 'white';
+            overlay.style.padding = '12px';
+            overlay.style.borderRadius = '8px';
+            overlay.style.fontFamily = 'monospace';
+            overlay.style.fontSize = '13px';
+            overlay.style.maxHeight = '40vh';
+            overlay.style.overflow = 'auto';
+            document.body.appendChild(overlay);
+        }
+        overlay.textContent = `HATA: ${e.message || e.error || 'Unknown error'} (${e.filename || ''}:${e.lineno || ''})`;
+    } catch (ignore) {}
+});
+
+// Performance tuning: detect mobile and set caps
+const IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth <= 480;
+const MAX_PARTICLES = IS_MOBILE ? 40 : 120;
+const MAX_TRAILS = IS_MOBILE ? 4 : 12;
+const CLOUD_COUNT = IS_MOBILE ? 2 : 3;
+
+// Frame throttling: mobile -> 30fps, desktop -> 60fps
+const TARGET_FPS = IS_MOBILE ? 30 : 60;
+const MIN_FRAME_INTERVAL = 1000 / TARGET_FPS;
+let lastFrameTime = performance.now();
+
 // Yuvarlak köşeli dikdörtgen çizim fonksiyonu
 function roundRect(ctx, x, y, width, height, radius) {
     if (width < 2 * radius) radius = width / 2;
@@ -100,13 +138,10 @@ const gameThemes = {
         canvas: ['#DDA0DD', '#E6E6FA', '#D8BFD8', '#DDA0DD'],
         pipe: ['#8B008B', '#9370DB', '#BA55D3']
     },
-    blue: {
-        canvas: ['#87CEEB', '#E0F6FF', '#B0E0E6', '#ADD8E6'],
-        pipe: ['#1E90FF', '#4169E1', '#6495ED']
-    },
-    sunset: {
-        canvas: ['#FFB88C', '#FFE5B4', '#FFDAB9', '#FFB6C1'],
-        pipe: ['#FF6347', '#FF8C00', '#FFA500']
+    // blue theme removed
+    halloween: {
+        canvas: ['#0b0710', '#2b0b17', '#4a1200', '#100306'],
+        pipe: ['#5a2b00', '#ff7a00', '#ffb347']
     }
 };
 
@@ -144,7 +179,18 @@ loadPlayerSkin();
 const pipes = [];
 const pipeWidth = 60;
 const pipeGap = 280;  // 220'den 280'e çıkardık - çok daha geniş geçiş (mobil için)
-const pipeSpeed = 1.6; // 1.8'den 1.6'ya düşürdük - daha yavaş hareket
+
+// Hız ayarları (default değerler)
+const BASES = {
+    pipeSpeed: 1.6, // baz boru hızı
+    groundSpeed: 2, // baz zemin hızı
+    playerJump: -8.5 // baz zıplama kuvveti (negatif)
+};
+
+// Aktif hız değişkenleri (uygulama setGameSpeed() ile değişecek)
+let pipeSpeed = BASES.pipeSpeed;
+let groundSpeed = BASES.groundSpeed;
+let playerJump = BASES.playerJump;
 let frameCount = 0;
 
 // Zemin
@@ -197,7 +243,8 @@ class Particle {
 // Partikül oluşturma fonksiyonları
 function createScoreParticles(x, y) {
     const colors = ['#FFD700', '#FFA500', '#FF69B4', '#FF1493', '#FF00FF'];
-    for (let i = 0; i < 15; i++) {
+    const count = IS_MOBILE ? 6 : 15;
+    for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)], 
             Math.random() * 3 + 2));
     }
@@ -205,7 +252,8 @@ function createScoreParticles(x, y) {
 
 function createChocolateParticles(x, y) {
     const colors = ['#8B4513', '#D2691E', '#DEB887', '#F4A460', '#FFE4B5'];
-    for (let i = 0; i < 10; i++) {
+    const count = IS_MOBILE ? 5 : 10;
+    for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)],
             Math.random() * 4 + 3));
     }
@@ -213,7 +261,8 @@ function createChocolateParticles(x, y) {
 
 function createJumpParticles(x, y) {
     const colors = ['#87CEEB', '#B0E0E6', '#ADD8E6', '#E0FFFF'];
-    for (let i = 0; i < 8; i++) {
+    const count = IS_MOBILE ? 3 : 8;
+    for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)],
             Math.random() * 2 + 1, (Math.random() - 0.5) * 3, Math.random() * 2 + 1));
     }
@@ -221,17 +270,24 @@ function createJumpParticles(x, y) {
 
 function createCrashParticles(x, y) {
     const colors = ['#FF0000', '#FF4500', '#FF6347', '#DC143C'];
-    for (let i = 0; i < 25; i++) {
+    const count = IS_MOBILE ? 12 : 25;
+    for (let i = 0; i < count && particles.length < MAX_PARTICLES; i++) {
         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)],
             Math.random() * 5 + 3));
     }
 }
 
 function updateParticles() {
+    // cap particle updates for performance
     for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
         if (particles[i].isDead()) {
             particles.splice(i, 1);
+        }
+        // safety cap
+        if (particles.length > MAX_PARTICLES) {
+            particles.splice(0, particles.length - MAX_PARTICLES);
+            break;
         }
     }
 }
@@ -345,6 +401,9 @@ function updateTrails() {
             trails.splice(i, 1);
         }
     }
+    if (trails.length > MAX_TRAILS) {
+        trails.splice(0, trails.length - MAX_TRAILS);
+    }
 }
 
 function drawTrails() {
@@ -361,6 +420,8 @@ function resizeCanvas() {
     player.x = canvas.width * 0.25;
     player.y = canvas.height * 0.4;
     ground.y = canvas.height - 50;
+    // Ghost'ları yeniden oluştur (canvas boyutu değişince)
+    if (typeof createGhosts === 'function') createGhosts(2);
 }
 
 resizeCanvas();
@@ -368,14 +429,56 @@ window.addEventListener('resize', resizeCanvas);
 
 // Arka plan bulutları
 const clouds = [];
-for (let i = 0; i < 3; i++) {
+for (let i = 0; i < CLOUD_COUNT; i++) {
     clouds.push({
         x: Math.random() * canvas.width,
         y: Math.random() * 200,
         width: 80 + Math.random() * 40,
-        speed: 0.3 + Math.random() * 0.5
+        speed: 0.25 + Math.random() * 0.45
     });
 }
+
+// Hayaletler (Cadılar Bayramı için)
+const ghosts = [];
+function createGhosts(count = 2) {
+    ghosts.length = 0;
+    for (let i = 0; i < count; i++) {
+        ghosts.push({
+            x: Math.random() * canvas.width,
+            y: 40 + Math.random() * 140,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: 0,
+            amp: 10 + Math.random() * 30,
+            phase: Math.random() * Math.PI * 2,
+            size: 28 + Math.random() * 18
+        });
+    }
+}
+
+function updateGhosts() {
+    if (currentGameTheme !== 'halloween') return;
+    ghosts.forEach(g => {
+        g.x += g.vx;
+        g.phase += 0.02;
+        g.y += Math.sin(g.phase) * 0.3;
+        // wrap around
+        if (g.x < -50) g.x = canvas.width + 50;
+        if (g.x > canvas.width + 50) g.x = -50;
+    });
+}
+
+function drawGhosts() {
+    ctx.save();
+    ghosts.forEach(g => {
+        ctx.globalAlpha = 0.9;
+        ctx.font = `${g.size}px Arial`;
+        ctx.fillText('👻', g.x, g.y);
+    });
+    ctx.restore();
+}
+
+// İlk başta birkaç hayalet oluştur
+createGhosts(2);
 
 // Event Listeners
 document.addEventListener('keydown', (e) => {
@@ -551,6 +654,37 @@ function createPipe() {
         chocolateCollected: false // Çikolata toplandı mı?
     });
 }
+
+// Oyun hızı presetleri ve uygulama fonksiyonu
+const GAME_SPEEDS = {
+    slow: 0.6,   // yavaş modu: %60 hız
+    normal: 1.0, // orta
+    fast: 1.5    // hızlı: %150
+};
+
+function setGameSpeed(key) {
+    if (!GAME_SPEEDS[key]) key = 'normal';
+    const mult = GAME_SPEEDS[key];
+    // apply
+    pipeSpeed = BASES.pipeSpeed * mult;
+    ground.speed = BASES.groundSpeed * mult;
+    player.jump = BASES.playerJump * mult;
+    playerJump = BASES.playerJump * mult;
+    localStorage.setItem('gameSpeed', key);
+
+    // update UI (if buttons exist)
+    try {
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active-speed'));
+        const btn = document.querySelector(`.speed-btn[data-speed="${key}"]`);
+        if (btn) btn.classList.add('active-speed');
+    } catch (e) {
+        // ignore
+    }
+}
+
+// Apply saved speed on load (if any)
+const savedSpeed = localStorage.getItem('gameSpeed') || 'normal';
+setGameSpeed(savedSpeed);
 
 function updatePlayer() {
     if (gameState !== 'playing') return;
@@ -1012,23 +1146,37 @@ function drawPipes() {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         
-        // Boruların arasına çikolata resmi çiz (sadece toplanmadıysa)
+        // Boruların arasına çikolata veya temaya göre balkabağı/örümcek çiz (sadece toplanmadıysa)
         if (!pipe.chocolateCollected) {
-            const chocolateImg = loadedChocolates[pipe.chocolateIndex];
-            const chocolateSize = 40; // Çikolata boyutu
+            const chocolateSize = 40; // ikon boyutu
             const chocolateX = pipe.x + (pipeWidth / 2) - (chocolateSize / 2);
             const chocolateY = pipe.topHeight + (pipeGap / 2) - (chocolateSize / 2);
-            
-            if (chocolateImg && chocolateImg.complete && chocolateImg.naturalHeight !== 0) {
-                // Resim yüklendiyse çiz
-                ctx.drawImage(chocolateImg, chocolateX, chocolateY, chocolateSize, chocolateSize);
-            } else {
-                // Resim yüklenmediyse emoji çiz (varsayılan)
-                ctx.font = '35px Arial';
-                ctx.fillStyle = '#8B4513';
+
+            if (currentGameTheme === 'halloween') {
+                // Cadılar Bayramı modu: balkabağı emoji
+                ctx.font = `${chocolateSize}px Arial`;
                 ctx.textAlign = 'center';
-                ctx.fillText('🍫', chocolateX + chocolateSize/2, chocolateY + chocolateSize/2 + 10);
+                ctx.fillText('🎃', chocolateX + chocolateSize / 2, chocolateY + chocolateSize / 2 + 12);
                 ctx.textAlign = 'left';
+
+                // Örümcek ağı sembolü biraz üstte
+                ctx.font = '18px Arial';
+                ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                ctx.fillText('🕸️', pipe.x + 8, Math.max(8, pipe.topHeight - 10));
+                ctx.fillStyle = '#000';
+            } else {
+                const chocolateImg = loadedChocolates[pipe.chocolateIndex];
+                if (chocolateImg && chocolateImg.complete && chocolateImg.naturalHeight !== 0) {
+                    // Resim yüklendiyse çiz
+                    ctx.drawImage(chocolateImg, chocolateX, chocolateY, chocolateSize, chocolateSize);
+                } else {
+                    // Resim yüklenmediyse emoji çiz (varsayılan)
+                    ctx.font = '35px Arial';
+                    ctx.fillStyle = '#8B4513';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('🍫', chocolateX + chocolateSize/2, chocolateY + chocolateSize/2 + 10);
+                    ctx.textAlign = 'left';
+                }
             }
         }
     });
@@ -1139,12 +1287,17 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Arka planda uçan kalpler
-    ctx.font = '20px Arial';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    for (let i = 0; i < 5; i++) {
-        const x = (frameCount * 0.5 + i * 100) % (canvas.width + 50) - 50;
-        const y = 50 + i * 80;
-        ctx.fillText('💕', x, y);
+    if (currentGameTheme !== 'halloween') {
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        for (let i = 0; i < 5; i++) {
+            const x = (frameCount * 0.5 + i * 100) % (canvas.width + 50) - 50;
+            const y = 50 + i * 80;
+            ctx.fillText('💕', x, y);
+        }
+    } else {
+        // halloween: hayaletleri çiz
+        drawGhosts();
     }
     
     // Çiz
@@ -1162,23 +1315,31 @@ function draw() {
     drawScorePopups();
 }
 
-function gameLoop() {
+function gameLoop(timestamp) {
+    // frame throttling
+    const elapsed = timestamp - lastFrameTime;
+    if (elapsed < MIN_FRAME_INTERVAL) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+    lastFrameTime = timestamp;
+
     // Sadece menüde değilse çiz
     if (gameState !== 'waiting') {
         if (gameState === 'playing') {
             frameCount++;
             updatePlayer();
             updatePipes();
-            
+            updateGhosts();
             // Efektleri güncelle
             updateParticles();
             updateScorePopups();
             updateTrails();
         }
-        
+
         draw();
     }
-    
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -1197,4 +1358,4 @@ function toggleVibration(enabled) {
 
 // Oyunu başlat
 document.getElementById('highScore').textContent = highScore;
-gameLoop();
+requestAnimationFrame(gameLoop);

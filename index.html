@@ -296,11 +296,9 @@
                     <button class="theme-btn" data-theme="purple" style="background: linear-gradient(135deg, #8B4789, #6C5B7B);">
                         💜 Mor
                     </button>
-                    <button class="theme-btn" data-theme="blue" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                        💙 Mavi
-                    </button>
-                    <button class="theme-btn" data-theme="sunset" style="background: linear-gradient(135deg, #FF6B6B, #FFE66D);">
-                        🌅 Gün Batımı
+                    <!-- Mavi tema kaldırıldı; yerine Cadılar Bayramı teması eklendi -->
+                    <button class="theme-btn" data-theme="halloween" style="background: linear-gradient(135deg, #2b0b17, #5a0f00);">
+                        � Cadılar Bayramı
                     </button>
                 </div>
             </div>
@@ -340,6 +338,16 @@
                     <label for="sfxVolume">Efekt Seviyesi: <span id="sfxVolumeLabel">90%</span></label>
                     <input type="range" id="sfxVolume" min="0" max="100" step="1" value="90">
                 </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>⚙️ Oyun Hızı</h3>
+                <div class="speed-buttons" style="display:flex;gap:10px;align-items:center;">
+                    <button class="speed-btn" data-speed="slow" title="Yavaş">🐢 Yavaş</button>
+                    <button class="speed-btn" data-speed="normal" title="Orta">⏱️ Orta</button>
+                    <button class="speed-btn" data-speed="fast" title="Hızlı">⚡ Hızlı</button>
+                </div>
+                <p style="margin-top:8px;font-weight:600;color:#333">Seviyeyi seçin: Yavaş (kolay), Orta (normal), Hızlı (zor)</p>
             </div>
             
             <div class="settings-section">
@@ -428,15 +436,11 @@
                 canvas: 'linear-gradient(to bottom, #DDA0DD 0%, #E6E6FA 30%, #D8BFD8 60%, #DDA0DD 100%)',
                 pipe: ['#8B008B', '#9370DB', '#BA55D3']
             },
-            blue: {
-                bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4A5568 100%)',
-                canvas: 'linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 30%, #B0E0E6 60%, #ADD8E6 100%)',
-                pipe: ['#1E90FF', '#4169E1', '#6495ED']
-            },
-            sunset: {
-                bg: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 50%, #4ECDC4 100%)',
-                canvas: 'linear-gradient(to bottom, #FFB88C 0%, #FFE5B4 30%, #FFDAB9 60%, #FFB6C1 100%)',
-                pipe: ['#FF6347', '#FF8C00', '#FFA500']
+            // Blue theme removed per request. Added Halloween theme.
+            halloween: {
+                bg: 'linear-gradient(135deg, #1b0b2b 0%, #3a0f14 50%, #5a0f00 100%)',
+                canvas: 'linear-gradient(to bottom, #0b0710 0%, #2b0b17 30%, #4a1200 60%, #100306 100%)',
+                pipe: ['#5a2b00', '#ff7a00', '#ffb347']
             }
         };
         
@@ -449,14 +453,15 @@
             
             // Ana menü arka planını değiştir
             document.querySelectorAll('.main-menu, body').forEach(el => {
-                el.style.background = theme.bg;
+                if (theme && theme.bg) el.style.background = theme.bg;
             });
             
             // Tema butonlarına aktif class ekle
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.remove('active-theme');
             });
-            document.querySelector(`[data-theme="${themeName}"]`).classList.add('active-theme');
+            const themeBtn = document.querySelector(`[data-theme="${themeName}"]`);
+            if (themeBtn) themeBtn.classList.add('active-theme');
         }
         
         // Sayfa yüklendiğinde temayı uygula
@@ -686,6 +691,21 @@
             
             // Anı kartlarını yükle ve kilitleri kontrol et
             updateMemoryCards();
+
+            // Speed buttons wiring (load saved selection)
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const sp = btn.getAttribute('data-speed');
+                    localStorage.setItem('gameSpeed', sp);
+                    if (typeof setGameSpeed === 'function') setGameSpeed(sp);
+                    // set active class
+                    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active-speed'));
+                    btn.classList.add('active-speed');
+                });
+            });
+            const saved = localStorage.getItem('gameSpeed') || 'normal';
+            const sbtn = document.querySelector(`.speed-btn[data-speed="${saved}"]`);
+            if (sbtn) sbtn.classList.add('active-speed');
         });
         
         // Test yardımcı fonksiyonlar (geliştirme için)
