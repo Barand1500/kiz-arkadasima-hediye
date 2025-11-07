@@ -799,6 +799,12 @@ function updatePipes() {
     
     // Boruları güncelle
     for (let i = pipes.length - 1; i >= 0; i--) {
+        // Güvenlik kontrolü - undefined boru atla
+        if (!pipes[i]) {
+            pipes.splice(i, 1);
+            continue;
+        }
+        
         pipes[i].x -= pipeSpeed;
         
         // Çikolata toplama kontrolü
@@ -986,6 +992,9 @@ function playCrashSound() {
 }
 
 function checkCollision(pipe) {
+    // Güvenlik kontrolü
+    if (!pipe) return false;
+    
     const playerLeft = player.x;
     const playerRight = player.x + player.width;
     const playerTop = player.y;
@@ -1164,7 +1173,11 @@ function drawPipes() {
     // Seçili temaya göre boru renkleri
     const theme = gameThemes[currentGameTheme];
     
+    if (!pipes || pipes.length === 0) return; // Güvenlik kontrolü
+    
     pipes.forEach(pipe => {
+        if (!pipe) return; // Null/undefined boru kontrolü
+        
         // Gölge efekti
         ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
         ctx.shadowBlur = 10;
