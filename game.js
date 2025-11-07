@@ -421,10 +421,19 @@ function resizeCanvas() {
     player.y = canvas.height * 0.4;
     ground.y = canvas.height - 50;
     // Ghost'ları yeniden oluştur (canvas boyutu değişince)
-    // Only recreate ghosts if the ghosts array and factory exist (avoid TDZ if this
-    // function runs before the ghost declarations are parsed)
-    if (typeof ghosts !== 'undefined' && typeof createGhosts === 'function') {
-        createGhosts(2);
+    // Schedule ghost recreation after the current tick so the rest of the file
+    // (including the `ghosts` const initialization) has a chance to run first.
+    // This avoids referencing a `ghosts` binding while it's still in the temporal
+    // dead zone (which would throw a ReferenceError).
+    if (typeof createGhosts === 'function') {
+        setTimeout(() => {
+            try {
+                createGhosts(2);
+            } catch (e) {
+                // If it still fails, silently ignore — the later explicit
+                // createGhosts() call (after its declaration) will handle it.
+            }
+        }, 0);
     }
 }
 
